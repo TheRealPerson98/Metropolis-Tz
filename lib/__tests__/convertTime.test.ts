@@ -20,9 +20,20 @@ describe('convertTime', () => {
     expect(nyToLondon).not.toBeNull();
 
     if (nyToLondon) {
-      // Get the hour in both timezones
-      const nyHour = testDate.getUTCHours();
-      const londonHour = nyToLondon.getUTCHours();
+      // Get hours in their respective timezones
+      const nyFormatter = new Intl.DateTimeFormat('en-US', {
+        timeZone: 'America/New_York',
+        hour: 'numeric',
+        hour12: false,
+      });
+      const londonFormatter = new Intl.DateTimeFormat('en-US', {
+        timeZone: 'Europe/London',
+        hour: 'numeric',
+        hour12: false,
+      });
+
+      const nyHour = parseInt(nyFormatter.format(testDate));
+      const londonHour = parseInt(londonFormatter.format(nyToLondon));
 
       // London should be ahead of NY by 4-5 hours depending on DST
       const hourDiff = (londonHour - nyHour + 24) % 24;

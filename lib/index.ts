@@ -295,11 +295,21 @@ class CityTimezones {
     if (!fromTz || !toTz) return null;
 
     try {
-      // Get the UTC timestamp
-      const utcTime = time.getTime();
+      // First convert the input time to the source timezone to ensure we have the correct local time
+      const fromFormatter = new Intl.DateTimeFormat('en-US', {
+        timeZone: fromTz,
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false,
+        timeZoneName: 'short',
+      });
 
-      // Create a formatter for the target timezone
-      const formatter = new Intl.DateTimeFormat('en-US', {
+      // Then convert to the target timezone
+      const toFormatter = new Intl.DateTimeFormat('en-US', {
         timeZone: toTz,
         year: 'numeric',
         month: '2-digit',
@@ -308,10 +318,15 @@ class CityTimezones {
         minute: '2-digit',
         second: '2-digit',
         hour12: false,
+        timeZoneName: 'short',
       });
 
-      // Format the UTC time in the target timezone
-      return new Date(formatter.format(utcTime));
+      // Get the formatted strings
+      const fromTimeStr = fromFormatter.format(time);
+      const fromDate = new Date(fromTimeStr);
+      const toTimeStr = toFormatter.format(fromDate);
+
+      return new Date(toTimeStr);
     } catch (_error) {
       return null;
     }
