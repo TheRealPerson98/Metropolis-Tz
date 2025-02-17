@@ -15,6 +15,8 @@ export interface CityInfo {
   latitude: number;
   /** The longitude coordinate of the city */
   longitude: number;
+  /** The population of the city */
+  population?: number;
 }
 
 interface IndexedCity extends CityInfo {
@@ -53,6 +55,31 @@ class CityTimezones {
     }
 
     return -1;
+  }
+
+  private levenshteinDistance(a: string, b: string): number {
+    if (a.length === 0) return b.length;
+    if (b.length === 0) return a.length;
+
+    const matrix = Array(b.length + 1)
+      .fill(null)
+      .map(() => Array(a.length + 1).fill(null));
+
+    for (let i = 0; i <= a.length; i++) matrix[0][i] = i;
+    for (let j = 0; j <= b.length; j++) matrix[j][0] = j;
+
+    for (let j = 1; j <= b.length; j++) {
+      for (let i = 1; i <= a.length; i++) {
+        const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+        matrix[j][i] = Math.min(
+          matrix[j][i - 1] + 1,
+          matrix[j - 1][i] + 1,
+          matrix[j - 1][i - 1] + cost
+        );
+      }
+    }
+
+    return matrix[b.length][a.length];
   }
 
   /**
@@ -220,6 +247,105 @@ class CityTimezones {
     return minutes > 0 ? `ahead by ${timeString}` : `behind by ${timeString}`;
   }
 
+  private haversineDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
+    const R = 6371; // Earth's radius in km
+    const dLat = ((lat2 - lat1) * Math.PI) / 180;
+    const dLon = ((lon2 - lon1) * Math.PI) / 180;
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos((lat1 * Math.PI) / 180) *
+        Math.cos((lat2 * Math.PI) / 180) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
+    return 2 * R * Math.asin(Math.sqrt(a));
+  }
+
+  /**
+   * Finds the nearest city to given coordinates.
+   * @param lat Latitude
+   * @param lon Longitude
+   * @param maxResults Maximum number of results to return
+   */
+  findNearestCities(lat: number, lon: number, maxResults: number = 5): CityInfo[] {
+    return [...this.cities]
+      .map((city) => ({
+        ...city,
+        distance: this.haversineDistance(lat, lon, city.latitude, city.longitude),
+      }))
+      .sort((a, b) => a.distance - b.distance)
+      .slice(0, maxResults);
+  }
+  /**
+   * Converts a time from one city's timezone to another's.
+   * @param time The Date object to convert
+   * @param fromCity Source city name
+   * @param fromCountry Source country code
+   * @param toCity Target city name
+   * @param toCountry Target country code
+   */
+  convertTime(
+    time: Date,
+    fromCity: string,
+    fromCountry: string,
+    toCity: string,
+    toCountry: string
+  ): Date | null {
+    const fromTz = this.getTimezone(fromCity, fromCountry);
+    const toTz = this.getTimezone(toCity, toCountry);
+    if (!fromTz || !toTz) return null;
+
+    try {
+      const timeString = time.toLocaleString('en-US', { timeZone: fromTz });
+      return new Date(new Date(timeString).toLocaleString('en-US', { timeZone: toTz }));
+    } catch (_error) {
+      return null;
+    }
+  }
+  /**
+   * Gets major cities (by population) in a country.
+   * @param country The ISO country code
+   * @param limit Maximum number of cities to return
+   */
+  getMajorCities(country: string, limit: number = 5): CityInfo[] {
+    return this.getCitiesByCountry(country)
+      .sort((a, b) => (b.population ?? 0) - (a.population ?? 0))
+      .slice(0, limit);
+  }
+  /**
+   * Formats a city's information into a readable string.
+   */
+  formatCityInfo(city: CityInfo, format: string = '{name}, {country}'): string {
+    return format
+      .replace('{name}', city.name)
+      .replace('{country}', city.country)
+      .replace('{timezone}', city.timezone)
+      .replace('{coordinates}', `${city.latitude},${city.longitude}`);
+  }
+  /**
+   * Fuzzy searches cities with better matching and typo tolerance.
+   * @param query The search query
+   * @param maxDistance Maximum Levenshtein distance for matches
+   */
+  searchCitiesFuzzy(query: string, maxDistance: number = 2): CityInfo[] {
+    const searchTerm = query.toLowerCase();
+    return this.cities.filter((city) => {
+      const distance = this.levenshteinDistance(city.name.toLowerCase(), searchTerm);
+      return distance <= maxDistance;
+    });
+  }
+  /**
+   * Validates if a city exists in the database.
+   */
+  isValidCity(cityName: string, country: string): boolean {
+    return this.binarySearch(`${cityName.toLowerCase()}|${country.toUpperCase()}`) !== -1;
+  }
+
+  /**
+   * Validates if a timezone is supported.
+   */
+  isValidTimezone(timezone: string): boolean {
+    return this.getUniqueTimezones().includes(timezone);
+  }
   /**
    * Gets the current time in a specific city.
    * @param cityName The name of the city

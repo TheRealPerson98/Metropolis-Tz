@@ -10,12 +10,16 @@ A high-performance TypeScript/JavaScript library for managing city timezone info
 
 - 🚀 High-performance binary search for lookups
 - 🌍 Comprehensive worldwide city database with coordinates
-- 🔍 Fast city search with smart partial matching
+- 🔍 Fast city search with smart partial matching and fuzzy search
 - 🕒 Timezone offset and time difference calculations
 - 🌐 ISO country code support
 - ✨ Full TypeScript support
 - 📦 Zero dependencies
 - ⚡ Optimized for speed
+
+## Requirements
+
+- Node.js >= 18.0.0
 
 ## Installation
 
@@ -34,28 +38,18 @@ const cityTz = new CityTimezones();
 const timezone = cityTz.getTimezone('New York', 'US');
 console.log(timezone); // 'America/New_York'
 
-// Search for cities
-const cities = cityTz.searchCities('york');
-console.log(cities);
-// [
-//   {
-//     name: 'New York',
-//     country: 'US',
-//     timezone: 'America/New_York',
-//     latitude: 40.7128,
-//     longitude: -74.0060
-//   },
-//   // ...more results
-// ]
+// Search for cities (with typo tolerance)
+const cities = cityTz.searchCitiesFuzzy('londun', 2);
+// Will find 'London' despite the typo
 
-// Get time difference between cities
+// Validate city and timezone
+const isValidCity = cityTz.isValidCity('Paris', 'FR'); // true
+const isValidTz = cityTz.isValidTimezone('Europe/Paris'); // true
+
+// Get time difference
 const diff = cityTz.getTimeDifference('New York', 'US', 'London', 'GB');
 console.log(cityTz.formatTimeDifference(diff!));
 // "behind by 5 hours" (during EDT)
-
-// Get current time in a city
-const tokyoTime = cityTz.getCurrentTime('Tokyo', 'JP');
-console.log(tokyoTime?.toLocaleString());
 ```
 
 ## API Reference
@@ -76,11 +70,25 @@ const cities = cityTz.searchCities('san');
 // Returns: San Francisco, San Diego, San Jose, etc.
 ```
 
-#### `getCitiesByTimezone(timezone: string): CityInfo[]`
-Gets all cities in a specific timezone.
+#### `searchCitiesFuzzy(query: string, maxDistance: number = 2): CityInfo[]`
+Searches for cities with typo tolerance using Levenshtein distance.
 ```typescript
-const cities = cityTz.getCitiesByTimezone('America/New_York');
-// Returns: All cities in EST/EDT
+const cities = cityTz.searchCitiesFuzzy('londun', 2);
+// Returns: London (despite the typo)
+```
+
+### Validation Methods
+
+#### `isValidCity(cityName: string, country: string): boolean`
+Checks if a city exists in the database.
+```typescript
+const isValid = cityTz.isValidCity('Paris', 'FR'); // true
+```
+
+#### `isValidTimezone(timezone: string): boolean`
+Checks if a timezone is supported.
+```typescript
+const isValid = cityTz.isValidTimezone('Europe/Paris'); // true
 ```
 
 ### Time Calculations
@@ -100,17 +108,36 @@ console.log(cityTz.formatTimeDifference(diff!));
 // Returns human-readable time difference
 ```
 
-#### `getCurrentTime(cityName: string, country: string): Date | null`
-Gets the current time in a specific city.
+#### `convertTime(time: Date, fromCity: string, fromCountry: string, toCity: string, toCountry: string): Date | null`
+Converts a time from one city's timezone to another's.
 ```typescript
-const time = cityTz.getCurrentTime('Sydney', 'AU');
-console.log(time?.toLocaleString());
+const time = new Date('2024-03-15T12:00:00');
+const converted = cityTz.convertTime(time, 'New York', 'US', 'Tokyo', 'JP');
+```
+
+### Geographic Methods
+
+#### `findNearestCities(lat: number, lon: number, maxResults: number = 5): CityInfo[]`
+Finds cities closest to given coordinates.
+```typescript
+const nearby = cityTz.findNearestCities(51.5074, -0.1278, 3); // Near London
+```
+
+#### `formatCityInfo(city: CityInfo, format: string = '{name}, {country}'): string`
+Formats city information using a template string.
+```typescript
+const city = cityTz.findNearestCities(51.5074, -0.1278, 1)[0];
+console.log(cityTz.formatCityInfo(city, '{name}, {country} ({coordinates})')); 
+// "London, GB (51.5074,-0.1278)"
 ```
 
 ### Data Methods
 
 #### `getAllCities(): CityInfo[]`
 Returns all cities in the database.
+
+#### `getCitiesByTimezone(timezone: string): CityInfo[]`
+Gets all cities in a specific timezone.
 
 #### `getUniqueCountries(): string[]`
 Returns all unique country codes.
@@ -140,6 +167,7 @@ The library uses optimized data structures and algorithms:
 - Pre-computed search keys
 - Efficient string operations
 - Smart partial matching
+- Fuzzy search with Levenshtein distance
 
 ## Contributing
 
