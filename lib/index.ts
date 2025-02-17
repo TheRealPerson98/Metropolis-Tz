@@ -297,7 +297,7 @@ class CityTimezones {
     try {
       // Get the UTC timestamp
       const utcTime = time.getTime();
-      
+
       // Create a formatter for the target timezone
       const formatter = new Intl.DateTimeFormat('en-US', {
         timeZone: toTz,
@@ -307,7 +307,7 @@ class CityTimezones {
         hour: '2-digit',
         minute: '2-digit',
         second: '2-digit',
-        hour12: false
+        hour12: false,
       });
 
       // Format the UTC time in the target timezone
