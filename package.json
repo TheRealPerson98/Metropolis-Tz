@@ -1,6 +1,6 @@
 {
   "name": "metropolis-tz",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A lightweight and efficient TypeScript/JavaScript library for managing city timezone information worldwide",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

@@ -295,8 +295,23 @@ class CityTimezones {
     if (!fromTz || !toTz) return null;
 
     try {
-      const timeString = time.toLocaleString('en-US', { timeZone: fromTz });
-      return new Date(new Date(timeString).toLocaleString('en-US', { timeZone: toTz }));
+      // Get the UTC timestamp
+      const utcTime = time.getTime();
+      
+      // Create a formatter for the target timezone
+      const formatter = new Intl.DateTimeFormat('en-US', {
+        timeZone: toTz,
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false
+      });
+
+      // Format the UTC time in the target timezone
+      return new Date(formatter.format(utcTime));
     } catch (_error) {
       return null;
     }
