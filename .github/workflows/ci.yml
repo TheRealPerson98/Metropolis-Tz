@@ -26,9 +26,6 @@ jobs:
     - name: Install dependencies
       run: npm ci
     
-    - name: Install CI-only dev dependencies
-      run: npm install -D depcheck @types/jest
-    
     - name: Check for unused dependencies
       run: npm run check-deps
     
