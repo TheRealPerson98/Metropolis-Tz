@@ -16,6 +16,10 @@ A lightweight and efficient TypeScript/JavaScript library for managing city time
 - 📦 Zero dependencies
 - ⚡ Fast and efficient
 
+## Requirements
+
+- Node.js >= 18.0.0
+
 ## Installation
 
 ```bash
