@@ -1,10 +1,10 @@
-# City-Timezones
+# Metropolis-TZ
 
-[![CI](https://github.com/TheRealPerson98/City-Timezones/actions/workflows/ci.yml/badge.svg)](https://github.com/TheRealPerson98/City-Timezones/actions/workflows/ci.yml)
-[![npm version](https://badge.fury.io/js/city-timezones.svg)](https://badge.fury.io/js/city-timezones)
+[![CI](https://github.com/TheRealPerson98/Metropolis-Tz/actions/workflows/ci.yml/badge.svg)](https://github.com/TheRealPerson98/Metropolis-Tz/actions/workflows/ci.yml)
+[![npm version](https://badge.fury.io/js/metropolis-tz.svg)](https://badge.fury.io/js/metropolis-tz)
 [![License: MPL 2.0](https://img.shields.io/badge/License-MPL_2.0-brightgreen.svg)](https://opensource.org/licenses/MPL-2.0)
 
-A lightweight and efficient TypeScript/JavaScript library for managing city timezone information. Perfect for applications that need to handle multiple cities and their corresponding timezones.
+A lightweight and efficient TypeScript/JavaScript library for managing city timezone information worldwide. Perfect for applications that need to handle multiple cities and their corresponding timezones.
 
 ## Features
 
@@ -19,13 +19,13 @@ A lightweight and efficient TypeScript/JavaScript library for managing city time
 ## Installation
 
 ```bash
-npm install city-timezones
+npm install metropolis-tz
 ```
 
 ## Usage
 
 ```typescript
-import CityTimezones from 'city-timezones';
+import CityTimezones from 'metropolis-tz';
 
 const cityTimezones = new CityTimezones();
 

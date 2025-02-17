@@ -1,7 +1,7 @@
 {
-  "name": "city-timezones",
+  "name": "metropolis-tz",
   "version": "0.0.1",
-  "description": "A simple library to get timezone information for cities worldwide",
+  "description": "A lightweight and efficient TypeScript/JavaScript library for managing city timezone information worldwide",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "type": "module",
@@ -27,12 +27,12 @@
   "license": "MPL-2.0",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/TheRealPerson98/City-Timezones.git"
+    "url": "git+https://github.com/TheRealPerson98/Metropolis-Tz.git"
   },
   "bugs": {
-    "url": "https://github.com/TheRealPerson98/City-Timezones/issues"
+    "url": "https://github.com/TheRealPerson98/Metropolis-Tz/issues"
   },
-  "homepage": "https://github.com/TheRealPerson98/City-Timezones#readme",
+  "homepage": "https://github.com/TheRealPerson98/Metropolis-Tz#readme",
   "jest": {
     "testEnvironment": "node",
     "testMatch": [
