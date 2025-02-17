@@ -9,4 +9,4 @@ describe('CityTimezones.getAllCities', () => {
     expect(Array.isArray(cities)).toBe(true);
     expect(cities.length).toBeGreaterThan(0);
   });
-}); 
+});

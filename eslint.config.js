@@ -1,41 +1,43 @@
 import js from '@eslint/js';
-import typescript from '@typescript-eslint/eslint-plugin';
-import typescriptParser from '@typescript-eslint/parser';
+import tsParser from '@typescript-eslint/parser';
+import tsPlugin from '@typescript-eslint/eslint-plugin';
 import prettier from 'eslint-plugin-prettier';
-import eslintConfigPrettier from 'eslint-config-prettier';
 
 export default [
   js.configs.recommended,
   {
-    ignores: ['dist/*', 'node_modules/*']
-  },
-  {
     files: ['**/*.ts'],
-    plugins: {
-      '@typescript-eslint': typescript,
-      prettier: prettier
-    },
     languageOptions: {
-      parser: typescriptParser,
+      parser: tsParser,
       parserOptions: {
-        project: './tsconfig.json'
-      }
+        project: './tsconfig.json',
+      },
+      globals: {
+        // Add Jest globals
+        describe: 'readonly',
+        test: 'readonly',
+        expect: 'readonly',
+        jest: 'readonly',
+        beforeEach: 'readonly',
+        afterEach: 'readonly',
+      },
+    },
+    plugins: {
+      '@typescript-eslint': tsPlugin,
+      'prettier': prettier,
     },
     rules: {
-      ...typescript.configs['recommended'].rules,
-      ...eslintConfigPrettier.rules,
-      'prettier/prettier': 'error',
-      '@typescript-eslint/no-explicit-any': 'error',
-      '@typescript-eslint/explicit-function-return-type': 'off',
-      '@typescript-eslint/explicit-module-boundary-types': 'off',
-      'no-unused-vars': 'off',
-      '@typescript-eslint/no-unused-vars': 'error'
-    }
+      ...tsPlugin.configs.recommended.rules,
+      'prettier/prettier': ['error', {
+        endOfLine: 'auto', // Handle different line endings
+        singleQuote: true,
+        trailingComma: 'es5',
+      }],
+      '@typescript-eslint/no-unused-vars': ['error', {
+        argsIgnorePattern: '^_',
+        varsIgnorePattern: '^_',
+        caughtErrorsIgnorePattern: '^_',
+      }],
+    },
   },
-  {
-    files: ['**/*.test.ts'],
-    rules: {
-      '@typescript-eslint/no-explicit-any': 'off'
-    }
-  }
 ]; 

@@ -11,12 +11,12 @@ describe('CityTimezones.searchCities', () => {
       expect.arrayContaining([
         expect.objectContaining({ name: 'New York City', country: 'US' }),
         expect.objectContaining({ name: 'East New York', country: 'US' }),
-        expect.objectContaining({ name: 'West New York', country: 'US' })
+        expect.objectContaining({ name: 'West New York', country: 'US' }),
       ])
     );
     // All results should contain "New York" in their name
-    results.forEach(city => {
+    results.forEach((city) => {
       expect(city.name.toLowerCase()).toContain('new york');
     });
   });
-}); 
+});

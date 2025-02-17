@@ -17,4 +17,4 @@ describe('CityTimezones.getUniqueCountries', () => {
     const uniqueCountries = new Set(countries);
     expect(uniqueCountries.size).toBe(countries.length);
   });
-}); 
+});

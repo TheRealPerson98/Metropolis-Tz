@@ -11,4 +11,4 @@ describe('CityTimezones.getTimezone', () => {
   test('should return null for non-existent city', () => {
     expect(cityTimezones.getTimezone('NonExistent', 'XX')).toBeNull();
   });
-}); 
+});
